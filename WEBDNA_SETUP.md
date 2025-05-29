@@ -20,17 +20,24 @@ Based on the analysis of the existing WebDNA installation in `html/WebCatalog/Ab
 - Blowfish encryption option
 - Enhanced tag support
 
-## Obtaining WebDNA 8
+## Obtaining WebDNA 8.6.5
 
-### Option 1: From Existing Installation
+### Official Package Installation (Recommended)
+WebDNA 8.6.5 is now available as an official Ubuntu package with FastCGI support:
+- **Latest Version**: WebDNA fcgi version v8.6.5 (May, 2025)
+- **Platform**: Ubuntu 22.04 LTS (Jammy Jellyfish) 64 bit
+- **Installation Method**: APT package manager
+- **Documentation**: https://docs.webdna.us/installers
+
+### Legacy Installation (If Needed)
 If you have access to the original server:
 1. Locate WebDNA binaries (typically in `/usr/local/webdna/` or similar)
 2. Copy the WebDNA module file (usually `mod_webdna.so`)
 3. Copy any WebDNA configuration files
 4. Copy license files
 
-### Option 2: From WebDNA Software Corp
-Contact WebDNA Software Corporation:
+### WebDNA Software Corp Contact
+For licensing or support:
 - Website: http://www.webdna.us
 - Developer Resource: http://dev.webdna.us
 - Email: support@webdna.us

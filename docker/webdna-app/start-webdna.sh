@@ -24,11 +24,18 @@ log "MySQL is ready!"
 if [ ! -f /opt/webdna/.initialized ]; then
     log "Initializing WebDNA for first run..."
     
-    # TODO: Add WebDNA initialization steps here
-    # This will include:
-    # - Setting up WebDNA module for Apache
-    # - Configuring WebCatalog database
-    # - Setting proper permissions
+    # Run WebDNA configurator for FastCGI setup
+    log "Running WebDNA configurator..."
+    webdna-configurator-fcgi
+    
+    # Set proper permissions for WebDNA
+    chown -R www-data:www-data /var/www/html
+    chmod -R 755 /var/www/html
+    
+    # Ensure WebDNA can write to necessary directories
+    mkdir -p /var/www/html/WebCatalog
+    chown -R www-data:www-data /var/www/html/WebCatalog
+    chmod -R 755 /var/www/html/WebCatalog
     
     touch /opt/webdna/.initialized
     log "WebDNA initialization completed"

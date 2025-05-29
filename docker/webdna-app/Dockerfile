@@ -1,7 +1,7 @@
 # WebDNA Application Container
-# Based on Ubuntu 20.04 LTS for compatibility with WebDNA 8 requirements
+# Based on Ubuntu 22.04 LTS for WebDNA 8.6.5 FastCGI support
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -9,11 +9,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Set timezone
 ENV TZ=America/New_York
 
-# Install system dependencies
+# Install system dependencies including WebDNA requirements
 RUN apt-get update && apt-get install -y \
     apache2 \
     apache2-dev \
     libapache2-mod-php \
+    libapache2-mod-fcgid \
     mysql-client \
     curl \
     wget \
@@ -22,17 +23,28 @@ RUN apt-get update && apt-get install -y \
     nano \
     tzdata \
     ca-certificates \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure timezone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Enable Apache modules that WebDNA might need
+# Enable Apache modules that WebDNA needs
 RUN a2enmod rewrite \
     && a2enmod headers \
     && a2enmod ssl \
     && a2enmod dav \
-    && a2enmod dav_fs
+    && a2enmod dav_fs \
+    && a2enmod fcgid
+
+# Install WebDNA FastCGI module
+# Add WebDNA repository and install
+RUN curl https://deb.webdna.us/ubuntu23/webdna.key | gpg --dearmor > webdna.gpg \
+    && install -o root -g root -m 644 webdna.gpg /etc/apt/trusted.gpg.d/ \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/webdna.gpg] https://deb.webdna.us/ubuntu23/ ./" > /etc/apt/sources.list.d/webdna.list \
+    && apt-get update \
+    && apt-get install -y webdna-fcgi-apache2-8.6.5 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create WebDNA directories
 RUN mkdir -p /opt/webdna \

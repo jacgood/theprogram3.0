@@ -73,8 +73,8 @@ check_webdna() {
         exit 1
     fi
     
-    print_warning "WebDNA binaries need to be manually installed in docker/webdna-app/webdna-binaries/"
-    print_warning "Please obtain WebDNA 8 installation files and place them in the appropriate directory."
+    print_status "WebDNA 8.6.5 FastCGI will be automatically installed from official repository"
+    print_status "No manual binary installation required - using APT package manager"
     
     print_status "WebDNA directory structure verified."
 }
