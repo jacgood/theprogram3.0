@@ -78,3 +78,11 @@ debug-webdna.dna
 # Docker override files that might contain secrets
 docker-compose.prod.yml
 docker-compose.local.yml
+
+# WebDNA binaries and proprietary files
+docker/webdna-app/webdna-binaries/
+docker/webdna-app/webdna-config/
+
+# Docker secrets and configuration
+config/secrets/*.txt
+!config/secrets/*.example

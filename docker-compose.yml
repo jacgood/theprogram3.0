@@ -1,0 +1,109 @@
+# The Program Dockerization - Multi-Container Setup
+# This docker-compose file orchestrates the WebDNA application and MySQL database
+
+version: '3.8'
+
+services:
+  # WebDNA Application Container
+  webdna-app:
+    build:
+      context: ./docker/webdna-app
+      dockerfile: Dockerfile
+    container_name: theprogram-webdna
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Mount the large html directory from host (read-only for security)
+      - ./html:/var/www/html:ro
+      # Persistent storage for WebDNA logs
+      - webdna-logs:/var/log/webdna
+      # Persistent storage for Apache logs
+      - apache-logs:/var/log/apache2
+    environment:
+      # Database connection settings
+      - MYSQL_HOST=mysql-db
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=theprogram
+      - MYSQL_USER=webdna
+      - MYSQL_PASSWORD_FILE=/run/secrets/mysql_password
+      # WebDNA configuration
+      - WEBDNA_HTML_PATH=/var/www/html
+      - WEBDNA_LOG_LEVEL=info
+      - APACHE_LOG_LEVEL=warn
+      # Timezone
+      - TZ=America/New_York
+    secrets:
+      - mysql_password
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - theprogram-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # MySQL Database Container
+  mysql-db:
+    image: mysql:8.0
+    container_name: theprogram-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
+      - MYSQL_DATABASE=theprogram
+      - MYSQL_USER=webdna
+      - MYSQL_PASSWORD_FILE=/run/secrets/mysql_password
+      - TZ=America/New_York
+    secrets:
+      - mysql_root_password
+      - mysql_password
+    volumes:
+      # Persistent storage for MySQL data
+      - mysql-data:/var/lib/mysql
+      # MySQL configuration
+      - ./docker/mysql-db/my.cnf:/etc/mysql/conf.d/custom.cnf:ro
+      # Initialization scripts
+      - ./docker/mysql-db/init:/docker-entrypoint-initdb.d:ro
+      # MySQL logs
+      - mysql-logs:/var/log/mysql
+    networks:
+      - theprogram-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+# Named volumes for persistent data
+volumes:
+  mysql-data:
+    driver: local
+    name: theprogram-mysql-data
+  webdna-logs:
+    driver: local
+    name: theprogram-webdna-logs
+  apache-logs:
+    driver: local
+    name: theprogram-apache-logs
+  mysql-logs:
+    driver: local
+    name: theprogram-mysql-logs
+
+# Docker secrets for sensitive data
+secrets:
+  mysql_root_password:
+    file: ./config/secrets/mysql_root_password.txt
+  mysql_password:
+    file: ./config/secrets/mysql_password.txt
+
+# Custom network for container communication
+networks:
+  theprogram-network:
+    driver: bridge
+    name: theprogram-network
