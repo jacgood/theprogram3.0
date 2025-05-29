@@ -1,0 +1,80 @@
+# Large application files - DO NOT COMMIT
+html/
+
+# Sensitive configuration files
+*.env
+.env*
+config/secrets.yml
+config/database.yml
+docker-compose.override.yml
+
+# Database files and backups
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+WebCatalog/
+localhost.sql
+
+# API Keys and credentials
+**/secrets/
+**/credentials/
+*.key
+*.pem
+*.p12
+*.pfx
+id_rsa*
+*.crt
+
+# Docker secrets
+docker-secrets/
+secrets/
+
+# Logs that might contain sensitive data
+*.log
+logs/
+ErrorLog.txt
+
+# Backup files that might contain sensitive data
+*.bak
+*.backup
+*.old
+backup/
+backups/
+
+# IDE and editor files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node modules (if any)
+node_modules/
+
+# Python cache (if any)
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# WebDNA specific sensitive files
+debug-webdna.dna
+*.dna.bak
+
+# Docker override files that might contain secrets
+docker-compose.prod.yml
+docker-compose.local.yml
